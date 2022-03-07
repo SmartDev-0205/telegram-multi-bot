@@ -10,12 +10,8 @@ from telethon.tl.types import ChannelParticipantsSearch
 
 
 class Group:
-    def __init__(self, group_id, group_interval):
+    def __init__(self, group_id):
         self.group_id = group_id
-        if group_interval == 0:
-            group_interval = 1
-        self.interval = group_interval
-        self.current_index = 0
 
 
 api_id = 10956225
@@ -38,8 +34,7 @@ def get_groups():
     json_groups = data["accounts"]
     for json_group in json_groups:
         group_id = json_group["groupID"]
-        group_interval = json_group["intervalMin"]
-        group = Group(group_id, group_interval)
+        group = Group(group_id)
         global groups
         groups.append(group)
 
@@ -80,10 +75,11 @@ for group in groups:
         if account_count < 2:
             exit(1)
         first_account = accounts[0]
-        participants = client.loop.run_until_complete(client(GetParticipantsRequest(
-            group.group_id, ChannelParticipantsSearch(''), offset, limit,
-            hash=0
-        )))
+        with TelegramClient(first_account, api_id, api_hash) as client:
+            participants = client.loop.run_until_complete(client(GetParticipantsRequest(
+                group.group_id, ChannelParticipantsSearch(''), offset, limit,
+                hash=0
+            )))
         users = participants.users
         if len(users) < limit:
             loop_condition = False
