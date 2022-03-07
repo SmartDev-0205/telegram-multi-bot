@@ -1,8 +1,7 @@
 {
-   "accounts":[
-      {
-         "groupID":"@bitgertbrise",
-         "intervalMin":30
-      }
-   ]
+  "accounts": [
+    {
+      "groupID": "@bitgertbrise"
+    }
+  ]
 }

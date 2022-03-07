@@ -71,45 +71,35 @@ get_accounts()
 get_groups()
 
 loop_condition = True
-while loop_condition:
-    message = messages[0]
-    for group in groups:
-        for index, account in enumerate(accounts):
-            print("{} user selected".format(index));
-            with TelegramClient(account, api_id, api_hash) as client:
-                offset = 430
-                limit = 10
-                try:
-                    participants = client.loop.run_until_complete(client(GetParticipantsRequest(
-                        group.group_id, ChannelParticipantsSearch(''), offset, limit,
-                        hash=0
-                    )))
-                    users = participants.users
-                    print("Get {} members".format(len(users)))
-                    if (len(users) < limit):
-                        loop_condition = False
-                    else:
-                        offset += limit
-                    for user in users:
-                        username = user.username
-                        if not username:
-                            continue
-                        user_id = "@" + username
-                        try:
-                            print(user.status.was_online)
-                        except:
-                            try:
-                                client.loop.run_until_complete(client.send_message(user_id, message))
-                                print("sent message to :", user_id)
-                                print("sleeping 120 seconds.")
-                                time.sleep(120)
-                            except Exception as error:
-                                print(error)
-                                offset -= limit
-                                print("sleeping 1800 seconds")
-                                time.sleep(1800)
-                                break
-                    print("Finished :", offset)
 
-                except Exception as error:
-                    print("Error:", error)
+message = messages[0]
+for group in groups:
+    offset = 0
+    limit = account_count - 1
+    while loop_condition:
+        if account_count < 2:
+            exit(1)
+        first_account = accounts[0]
+        participants = client.loop.run_until_complete(client(GetParticipantsRequest(
+            group.group_id, ChannelParticipantsSearch(''), offset, limit,
+            hash=0
+        )))
+        users = participants.users
+        if len(users) < limit:
+            loop_condition = False
+        for index, user in enumerate(users):
+            try:
+                username = user.username
+                if not username:
+                    continue
+                user_id = "@" + username
+                account = accounts[index + 1]
+                with TelegramClient(account, api_id, api_hash) as client:
+                    client.loop.run_until_complete(client.send_message(user_id, message))
+                    print("sent message to :", user_id)
+                    print("sleeping 60 seconds.")
+                    time.sleep(60)
+            except :
+                pass
+        offset += limit
+    offset += limit
