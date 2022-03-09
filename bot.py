@@ -8,7 +8,6 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.types import ChannelParticipantsSearch
 
-
 class Group:
     def __init__(self, group_id):
         self.group_id = group_id
@@ -95,7 +94,7 @@ for group in groups:
                     print("sent message to :", user_id)
                     print("sleeping 60 seconds.")
                     time.sleep(60)
-            except :
+            except:
                 pass
         offset += limit
     offset += limit
